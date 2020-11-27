@@ -6,7 +6,7 @@ from homeassistant.helpers import aiohttp_client
 from .const import DOMAIN  # pylint:disable=unused-import
 from .tech import Tech
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__package__)
 
 DATA_SCHEMA = vol.Schema({
     vol.Required("username"): str,
