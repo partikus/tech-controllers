@@ -8,6 +8,7 @@ from homeassistant.helpers import aiohttp_client
 from .tech import Tech
 from .const import DOMAIN
 
+logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 
