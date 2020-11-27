@@ -10,7 +10,8 @@ _LOGGER = logging.getLogger(__name__)
 
 DATA_SCHEMA = vol.Schema({
     vol.Required("username"): str,
-    vol.Required("password"): str
+    vol.Required("password"): str,
+    vol.Required("version", default="L8"): str,
 })
 
 
@@ -25,10 +26,18 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     if not await api.authenticate(data["username"], data["password"]):
         raise InvalidAuth
+
     modules = await api.list_modules()
     # Currently only one Tech controller supported
-    module = modules[0]
-    
+    foundModules = [module for module in modules if data["version"] in module["version"]]
+
+    _LOGGER.debug("Found Modules", foundModules)
+
+    if not foundModules:
+        raise DeviceNotFound
+    else:
+        module = foundModules[0]
+
     # If you cannot connect:
     # throw CannotConnect
     # If the authentication is wrong:
@@ -57,6 +66,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             except InvalidAuth:
                 errors["base"] = "invalid_auth"
+            except DeviceNotFound:
+                errors["base"] = "device_not_found"
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
@@ -69,6 +80,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class CannotConnect(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""
 
-
 class InvalidAuth(exceptions.HomeAssistantError):
     """Error to indicate there is invalid auth."""
+
+class DeviceNotFound(exceptions.HomeAssistantError):
+    """Error to indicate there is no device found."""

@@ -6,6 +6,7 @@
         "error": {
             "cannot_connect": "Cannot connect to Tech API.",
             "invalid_auth": "Invalid username or password!",
+            "device_not_found": "Device not found. Please change the version name.",
             "unknown": "Unknown error. Please try again or report bug to ..."
         },
         "step": {

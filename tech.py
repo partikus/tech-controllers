@@ -7,15 +7,15 @@ import json
 import time
 import asyncio
 
+from .const import BASE_URL
+
 logging.basicConfig(level=logging.DEBUG)
 _LOGGER = logging.getLogger(__name__)
 
 class Tech:
     """Main class to perform Tech API requests"""
 
-    TECH_API_URL = "https://emodul.eu/api/v1/"
-
-    def __init__(self, session: aiohttp.ClientSession, user_id = None, token = None, base_url = TECH_API_URL, update_interval = 30):
+    def __init__(self, session: aiohttp.ClientSession, user_id = None, token = None, base_url = BASE_URL, update_interval = 30):
         _LOGGER.debug("Init Tech")
         self.headers = {
             'Accept': 'application/json',
@@ -60,7 +60,7 @@ class Tech:
             return data
     
     async def authenticate(self, username, password):
-        path = "authentication"
+        path = "/authentication"
         post_data = '{"username": "' + username + '", "password": "' + password + '"}'
         result = await self.post(path, post_data)
         self.authenticated = result["authenticated"]
@@ -76,7 +76,7 @@ class Tech:
 
     async def list_modules(self):
         if self.authenticated:
-            path = "users/" + self.user_id + "/modules"
+            path = "/users/" + self.user_id + "/modules"
             result = await self.get(path)
         else:
             raise TechError(401, "Unauthorized")
@@ -85,7 +85,7 @@ class Tech:
     async def get_module_data(self, module_udid):
         _LOGGER.debug("Getting module data..." + module_udid + ", " + self.user_id)
         if self.authenticated:
-            path = "users/" + self.user_id + "/modules/" + module_udid
+            path = "/users/" + self.user_id + "/modules/" + module_udid
             result = await self.get(path)
         else:
             raise TechError(401, "Unauthorized")
@@ -142,7 +142,7 @@ class Tech:
         """
         _LOGGER.debug("Setting zone constant temperature...")
         if self.authenticated:
-            path = "users/" + self.user_id + "/modules/" + module_udid + "/zones"
+            path = "/users/" + self.user_id + "/modules/" + module_udid + "/zones"
             data = {
                 "mode" : {
                     "id" : self.zones[zone_id]["mode"]["id"],
@@ -173,7 +173,7 @@ class Tech:
         """
         _LOGGER.debug("Turing zone on/off: %s", on)
         if self.authenticated:
-            path = "users/" + self.user_id + "/modules/" + module_udid + "/zones"
+            path = "/users/" + self.user_id + "/modules/" + module_udid + "/zones"
             data = {
                 "zone" : {
                     "id" : zone_id,
